@@ -1,5 +1,7 @@
 #include "renderer.hpp"
 #include <cassert>
+#include <iostream>
+#include <ostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -10,6 +12,16 @@ static void framebuffer_size_callback(GLFWwindow *window, const int width, const
     {
         renderer->handle_resize(width, height);
     }
+}
+
+static void APIENTRY opengl_error_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
+                                           GLsizei length, const GLchar *message, const void *userParam)
+{
+    if (id == 131185 || id == 131218)
+    {
+        return;
+    }
+    std::cerr << "OpenGL LOG: " << message << "\n";
 }
 
 void Renderer::initialize(const int windowWidth, const int windowHeight, const std::string& windowTitle)
@@ -26,13 +38,20 @@ void Renderer::initialize(const int windowWidth, const int windowHeight, const s
 
     init_glad();
 
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(opengl_error_callback, nullptr);
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Renderer::init_glfw()
 {
-    assert(glfwInit() && "Failed to initialize GLFW!");
+    if(bool(glfwInit()) == false)
+    {
+        std::cerr << "Failed to initialize GLFW!\n";
+        assert(false);
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -50,8 +69,12 @@ void Renderer::create_window()
 
 void Renderer::init_glad()
 {
-    assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) 
-           && "Failed to initialize OpenGL loader!");
+
+    if (bool(gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) == false)
+    {
+        std::cerr << "Failed to initialize OpenGL loader!\n";
+        assert(false);
+    }
 }
 
 void Renderer::create_shader()
