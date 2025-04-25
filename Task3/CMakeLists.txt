@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 
-set(targetName Browser)
+set(targetName BinaryOperation)
 project(${targetName})
 
 set(CMAKE_CXX_STANDARD 20)
@@ -11,7 +11,7 @@ file(GLOB_RECURSE HEADER_FILES
      "${CMAKE_CURRENT_SOURCE_DIR}/Code/*.hpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/Code/*.inl")
 	 
-set(TASK1_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Code" CACHE INTERNAL "")
+set(TASK3_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Code" CACHE INTERNAL "")
 
 add_executable(${targetName} "Code/main.cpp")
 

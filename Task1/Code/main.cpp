@@ -1,27 +1,64 @@
 #include <iostream>
-#include "compress.hpp"
-
+#include "trie.hpp"
 
 int main()
 {
-    Array2D<uint32_t> data =
-    {
-        0, 0, 0, 1, 1, 2, 3,
-        0, 0, 4, 4, 4, 2, 2,
-        2, 2, 2, 2, 2, 1, 2
-    };
+    void(setlocale(LC_ALL, "pl_PL")); // Sanity check
+    Trie trie;
 
-    CompressedData<uint32_t> result = compress_data(data);
+    std::string line;
+    std::vector<std::string> results;
+    std::cout << "==========================================================\n"
+                 "         *** Witaj w Szukajka.pl - Rok 1997 ***           \n"
+                 "        Twój osobisty silnik podpowiedzi zapytañ!         \n"
+                 "==========================================================\n"
+                 "  Dostêpne komendy:                                       \n"
+                 "                                                          \n"
+                 "  > add: <zapytanie>                                      \n"
+                 "     Dodaje nowe zapytanie do bazy wyszukiwarki.          \n"
+                 "     Przyk³ad: add: Kiedy jest nowy rok w Chinach?        \n"
+                 "                                                          \n"
+                 "  > ask: <prefix zapytania>                               \n"
+                 "     Wyszukuje zapytania zaczynaj¹ce siê od danego        \n"
+                 "     prefixu i wypisuje najbardziej pasuj¹ce.             \n"
+                 "     Przyk³ad: ask: Kiedy jest nowy rok                   \n"
+                 "                                                          \n"
+                 "  > exit.                                                 \n"
+                 "     Koñczy dzia³anie programu.                           \n"
+                 "==========================================================\n";
 
-    if (result.has_value() == false)
+    std::cout << ">";
+    while (std::getline(std::cin, line))
     {
-        std::cout << "Compressed is bigger than original data!";
-        return 0;
+        if (line.starts_with("add: "))
+        {
+            std::string query = line.substr(5);
+            trie.insert(query);
+        }
+        else if (line.starts_with("ask: "))
+        {
+            std::string prefix = line.substr(5);
+            trie.find_similar(prefix, results);
+            if (results.empty())
+            {
+                std::cout << "Brak wyników :(\n";
+            } else {
+                for (const std::string &similar : results)
+                {
+                    std::cout << "result: " << similar << "\n";
+                }
+            }
+        }
+        else if (line.starts_with("exit."))
+        {
+            break;
+        }
+        else
+        {
+            std::cout << "Nieznana komenda\n";
+        }
+        std::cout << ">";
     }
 
-    for (auto [value, count] : result.value())
-    {
-        std::cout << "{" << value << "," << int32_t(count) << "},";
-    }
     return 0;
 }

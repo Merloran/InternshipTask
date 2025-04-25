@@ -1,8 +1,9 @@
 {
-	"name": "browser-test",
+	"name": "collision",
 	"version-string": "1.0.0",
 	"dependencies": 
 	[
-		"gtest"
+		"glfw3",
+		"glad"
 	]
 }

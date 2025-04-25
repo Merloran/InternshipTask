@@ -1,17 +1,25 @@
 cmake_minimum_required(VERSION 3.26)
 
-set(targetName Browser)
+set(targetName Collision)
 project(${targetName})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(VCPKG_MANIFEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+find_package(spdlog CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
 
 file(GLOB_RECURSE HEADER_FILES
      "${CMAKE_CURRENT_SOURCE_DIR}/Code/*.h"
      "${CMAKE_CURRENT_SOURCE_DIR}/Code/*.hpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/Code/*.inl")
 	 
-set(TASK1_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Code" CACHE INTERNAL "")
+set(TASK2_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Code" CACHE INTERNAL "")
+
+file(GLOB_RECURSE LIB_SOURCES "*.cpp")
 
 add_executable(${targetName} "Code/main.cpp")
 
@@ -36,6 +44,11 @@ endforeach()
 if (MSVC)
     target_compile_options(${targetName} PRIVATE /utf-8)
 endif()
+
+
+target_link_libraries(${targetName} PRIVATE spdlog::spdlog)
+target_link_libraries(${targetName} PRIVATE glfw)
+target_link_libraries(${targetName} PRIVATE glad::glad)
 
 target_include_directories(${targetName} PRIVATE
 						   ${CMAKE_CURRENT_SOURCE_DIR}/Code)

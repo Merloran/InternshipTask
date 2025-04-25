@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 
-set(targetName BrowserTest)
+set(targetName BinaryOperationTest)
 project(${targetName})
 
 set(CMAKE_CXX_STANDARD 20)
@@ -14,7 +14,7 @@ if(MSVC)
     target_compile_options(${targetName} PRIVATE /utf-8)
 endif()
 
-target_include_directories(${targetName} PRIVATE ${TASK1_INCLUDE_DIR})
+target_include_directories(${targetName} PRIVATE ${TASK3_INCLUDE_DIR})
 
 target_link_libraries(${targetName} PRIVATE
     GTest::gtest

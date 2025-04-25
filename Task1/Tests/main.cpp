@@ -1,46 +1,80 @@
 #include <gtest/gtest.h>
 #include <cstdint>
 #include <limits>
-#include "compress.hpp"
+#include "trie.hpp"
 
-TEST(CompressionTest, CompressesCorrectly)
+TEST(TrieTest, SearchTest)
 {
-    Array2D<uint32_t> input =
-    {
-        0, 0, 0, 1, 1, 2, 3,
-        0, 0, 4, 4, 4, 2, 2,
-        2, 2, 2, 2, 2, 1, 2
-    };
+    Trie trie;
 
-    const CompressedData<uint32_t> result = compress_data(input);
-    ASSERT_TRUE(result.has_value());
+    trie.insert("kot");
+    trie.insert("kotek");
+    trie.insert("kotek123");
 
-    const std::vector<Data<uint32_t>> expected = 
-    {
-        {0, 3}, {1, 2}, {2, 1}, {3, 1},
-        {0, 2}, {4, 3}, {2, 2},
-        {2, 5}, {1, 1}, {2, 1}
-    };
-
-    ASSERT_EQ(result->size(), expected.size());
-    for (size_t i = 0; i < expected.size(); ++i)
-    {
-        EXPECT_EQ(result->at(i).value, expected[i].value);
-        EXPECT_EQ(result->at(i).count, expected[i].count);
-    }
+    EXPECT_TRUE(trie.search("kot"));
+    EXPECT_TRUE(trie.search("kotek"));
+    EXPECT_TRUE(trie.search("kotek123"));
+    EXPECT_FALSE(trie.search("pies"));
 }
 
-TEST(CompressionTest, ReturnsNulloptIfCompressedIsBigger)
+TEST(TrieTest, FindSimilarTest)
 {
-    Array2D<uint8_t> input = 
-    {
-         1,  2,  3,  4,  5,  6,  7,
-         8,  9, 10, 11, 12, 13, 14,
-        15, 16, 17, 18, 19, 20, 21
-    };
+    Trie trie;
 
-    CompressedData<uint8_t> result = compress_data(input);
-    EXPECT_FALSE(result.has_value());
+    trie.insert("kot");
+    trie.insert("kotek");
+    trie.insert("kotek123");
+    trie.insert("pies");
+    trie.insert("piesa");
+
+    std::vector<std::string> results;
+
+    trie.find_similar("ko", results);
+    EXPECT_EQ(results.size(), 3);
+    EXPECT_EQ(results[0], "kot");
+    EXPECT_EQ(results[1], "kotek");
+    EXPECT_EQ(results[2], "kotek123");
+
+    results.clear();
+
+    trie.find_similar("pi", results);
+    EXPECT_EQ(results.size(), 2);
+    EXPECT_EQ(results[0], "pies");
+    EXPECT_EQ(results[1], "piesa");
+
+    results.clear();
+
+    trie.find_similar("", results);
+    EXPECT_EQ(results.size(), 5);
+    EXPECT_TRUE(std::ranges::find(results, "kot")      != results.end());
+    EXPECT_TRUE(std::ranges::find(results, "kotek")    != results.end());
+    EXPECT_TRUE(std::ranges::find(results, "kotek123") != results.end());
+    EXPECT_TRUE(std::ranges::find(results, "pies")     != results.end());
+    EXPECT_TRUE(std::ranges::find(results, "piesa")    != results.end());
+}
+
+TEST(TrieTest, NoMatchingPrefix)
+{
+    Trie trie;
+
+    trie.insert("kot");
+    trie.insert("kotek");
+
+    std::vector<std::string> results;
+
+    trie.find_similar("pies", results);
+    EXPECT_EQ(results.size(), 0);
+}
+
+TEST(TrieTest, EmptyTrie)
+{
+    Trie trie;
+
+    EXPECT_FALSE(trie.search("kot"));
+
+    std::vector<std::string> results;
+    trie.find_similar("kot", results);
+    EXPECT_EQ(results.size(), 0);
 }
 
 int main(int argc, char **argv)
