@@ -26,7 +26,7 @@ int main()
                  "  > exit.                                                 \n"
                  "     Koñczy dzia³anie programu.                           \n"
                  "==========================================================\n";
-
+    
     std::cout << ">";
     while (std::getline(std::cin, line))
     {
@@ -47,6 +47,7 @@ int main()
                 {
                     std::cout << "result: " << similar << "\n";
                 }
+                results.clear();
             }
         }
         else if (line.starts_with("exit."))

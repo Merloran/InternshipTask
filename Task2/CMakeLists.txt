@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(VCPKG_MANIFEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-find_package(spdlog CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
@@ -19,7 +18,13 @@ file(GLOB_RECURSE HEADER_FILES
 	 
 set(TASK2_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Code" CACHE INTERNAL "")
 
-file(GLOB_RECURSE LIB_SOURCES "*.cpp")
+file(GLOB_RECURSE LIB_SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Code/Utilities/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Code/Render/*.cpp"
+)
+
+add_library(${targetName}Lib STATIC ${LIB_SOURCES})
+target_include_directories(${targetName}Lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Code)
 
 add_executable(${targetName} "Code/main.cpp")
 
@@ -46,9 +51,13 @@ if (MSVC)
 endif()
 
 
-target_link_libraries(${targetName} PRIVATE spdlog::spdlog)
 target_link_libraries(${targetName} PRIVATE glfw)
 target_link_libraries(${targetName} PRIVATE glad::glad)
+
+target_link_libraries(${targetName}Lib PRIVATE glfw glad::glad)
+
+set(TASK2_LIB ${targetName}Lib CACHE INTERNAL "")
+target_link_libraries(${targetName} PRIVATE ${TASK2_LIB})
 
 target_include_directories(${targetName} PRIVATE
 						   ${CMAKE_CURRENT_SOURCE_DIR}/Code)

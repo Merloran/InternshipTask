@@ -21,6 +21,7 @@ target_link_libraries(${targetName} PRIVATE
     GTest::gtest_main
     GTest::gmock
     GTest::gmock_main
+    ${TASK2_LIB}
 )
 
 add_test(NAME ${targetName} COMMAND ${targetName})
